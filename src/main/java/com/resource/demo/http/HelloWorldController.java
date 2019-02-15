@@ -1,29 +1,38 @@
 package com.resource.demo.http;
 
 import com.resource.demo.http.data.HelloRequest;
-import com.resource.demo.http.data.HelloResponse;
-import com.resource.demo.http.data.MessageResponse;
+import com.resource.demo.repository.MessageEntity;
+import com.resource.demo.repository.MessageRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/messages")
 public class HelloWorldController {
 
+    @Autowired
+    MessageRepository messageRepository;
+
     @GetMapping
-    public HelloResponse getResponse() {
+    public Iterable<MessageEntity> getResponse() {
 
-        HelloResponse helloResponse = new HelloResponse(1L, "descricao");
-
-        return helloResponse;
+        return messageRepository.findAll();
     }
 
     @PostMapping
-    public MessageResponse postMessage(@RequestBody HelloRequest request) {
+    public MessageEntity postMessage(@RequestBody HelloRequest request) {
 
         String mensagem = String.format("Mensagem: %s", request.getMessage());
 
-        MessageResponse response = new MessageResponse(mensagem);
+        MessageEntity messageEntity = new MessageEntity();
+        messageEntity.setMessage(mensagem);
 
-        return response;
+        return messageRepository.save(messageEntity);
+    }
+
+    @GetMapping("/{id}")
+    public MessageEntity findById(@PathVariable Long id) {
+
+        return messageRepository.findById(id).get();
     }
 }
