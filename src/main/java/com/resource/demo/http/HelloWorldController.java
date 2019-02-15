@@ -1,6 +1,7 @@
 package com.resource.demo.http;
 
 import com.resource.demo.http.data.HelloRequest;
+import com.resource.demo.http.data.MessageResponse;
 import com.resource.demo.repository.MessageEntity;
 import com.resource.demo.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,8 @@ public class HelloWorldController {
 
     @Autowired
     MessageRepository messageRepository;
+
+    MessageResponse messageResponse = new MessageResponse();
 
     @GetMapping
     public Iterable<MessageEntity> getResponse() {
@@ -40,7 +43,7 @@ public class HelloWorldController {
         return messageRepository.findById(id).get();
     }
 
-    @PutMapping("/{id}")
+  @PutMapping("/{id}")
     public ResponseEntity<MessageEntity> putMessageEntity(@PathVariable Long id, @RequestBody HelloRequest request){
 
         Optional<MessageEntity> optionalMessageEntity = messageRepository.findById(id);
@@ -54,6 +57,13 @@ public class HelloWorldController {
         messageEntity.setMessage(String.format(request.getMessage()));
 
         return ResponseEntity.ok(messageRepository.save(messageEntity));
+    }
+  
+    @DeleteMapping("/{id}")
+    public MessageResponse deleteMessage(@PathVariable Long id){
+        messageRepository.deleteById(id);   
+        messageResponse.setMessage("A mensagem com id: " + id + " foi deletada.");
+        return messageResponse;
 
     }
 }
