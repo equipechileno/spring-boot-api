@@ -4,7 +4,10 @@ import com.resource.demo.http.data.HelloRequest;
 import com.resource.demo.http.data.MessageResponse;
 import com.resource.demo.repository.MessageEntity;
 import com.resource.demo.repository.MessageRepository;
+import com.sun.deploy.net.HttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -40,9 +43,9 @@ public class HelloWorldController {
     }
 
     @DeleteMapping("/{id}")
-    public MessageResponse deleteMessage(@PathVariable Long id){
-        messageRepository.deleteById(id);   
+    public HttpStatus deleteMessage(@PathVariable Long id, HttpResponse httpResponse){
+        messageRepository.deleteById(id);
         messageResponse.setMessage("A mensagem com id: " + id + " foi deletada.");
-        return messageResponse;
+        return HttpStatus.NO_CONTENT;
     }
 }
