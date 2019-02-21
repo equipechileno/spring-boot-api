@@ -9,6 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
+
 @RestController
 @RequestMapping("/messages")
 public class HelloWorldController {
@@ -40,6 +43,22 @@ public class HelloWorldController {
         return messageRepository.findById(id).get();
     }
 
+  @PutMapping("/{id}")
+    public ResponseEntity<MessageEntity> putMessageEntity(@PathVariable Long id, @RequestBody HelloRequest request){
+
+        Optional<MessageEntity> optionalMessageEntity = messageRepository.findById(id);
+
+        if (!optionalMessageEntity.isPresent()){
+            return ResponseEntity.badRequest().build();
+        }
+
+        MessageEntity messageEntity = optionalMessageEntity.get();
+
+        messageEntity.setMessage(String.format(request.getMessage()));
+
+        return ResponseEntity.ok(messageRepository.save(messageEntity));
+    }
+  
     @DeleteMapping("/{id}")
     public Object deleteMessage(@PathVariable Long id){
         try {
@@ -48,5 +67,6 @@ public class HelloWorldController {
             return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+
     }
 }
