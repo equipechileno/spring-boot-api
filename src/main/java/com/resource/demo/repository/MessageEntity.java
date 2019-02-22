@@ -18,10 +18,8 @@ public class MessageEntity {
     }
 
     public MessageEntity(Long id, String message) {
-        if (id != null && message != null) {
-            this.id = id;
-            this.message = message;
-        }
+        this.id = id;
+        this.message = message;
     }
 
     public Long getId() {

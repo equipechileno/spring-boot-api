@@ -1,15 +1,13 @@
 package com.resource.demo.http;
 
 import com.resource.demo.http.data.HelloRequest;
+import com.resource.demo.http.data.HelloResponse;
 import com.resource.demo.http.data.MessageResponse;
-import com.resource.demo.repository.MessageEntity;
-import com.resource.demo.repository.MessageRepository;
+import com.resource.demo.service.HelloWorldService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 
 @RestController
@@ -17,52 +15,39 @@ import java.util.Optional;
 public class HelloWorldController {
 
     @Autowired
-    MessageRepository messageRepository;
+    HelloWorldService helloWorldService;
 
     MessageResponse messageResponse = new MessageResponse();
 
     @GetMapping
-    public Iterable<MessageEntity> getResponse() {
-
-        return messageRepository.findAll();
+    public Iterable<HelloResponse> getResponse() {
+        return helloWorldService.findAllMessages();
     }
 
     @PostMapping
-    public MessageEntity postMessage(@RequestBody HelloRequest request) {
-
-        String mensagem = String.format("Mensagem: %s", request.getMessage());
-
-        MessageEntity messageEntity = new MessageEntity();
-        messageEntity.setMessage(mensagem);
-
-        return messageRepository.save(messageEntity);
+    public HelloResponse postMessage(@RequestBody HelloRequest request) {
+        return helloWorldService.saveMessage(request);
     }
 
     @GetMapping("/{id}")
-    public MessageEntity findById(@PathVariable Long id) {
-        return messageRepository.findById(id).get();
+    public HelloResponse findById(@PathVariable Long id) {
+        return helloWorldService.findMessageById(id);
     }
 
   @PutMapping("/{id}")
-    public ResponseEntity<MessageEntity> putMessageEntity(@PathVariable Long id, @RequestBody HelloRequest request){
-
-        Optional<MessageEntity> optionalMessageEntity = messageRepository.findById(id);
-
-        if (!optionalMessageEntity.isPresent()){
-            return ResponseEntity.badRequest().build();
-        }
-
-        MessageEntity messageEntity = optionalMessageEntity.get();
-
-        messageEntity.setMessage(String.format(request.getMessage()));
-
-        return ResponseEntity.ok(messageRepository.save(messageEntity));
+    public ResponseEntity<HelloResponse> putMessageEntity(@PathVariable Long id, @RequestBody HelloRequest request){
+      HelloResponse helloResponse = helloWorldService.findMessageById(id);
+      if (helloResponse != null) {
+          return ResponseEntity.ok(helloWorldService.updateMessage(helloResponse));
+      } else {
+          return ResponseEntity.badRequest().build();
+      }
     }
   
     @DeleteMapping("/{id}")
     public Object deleteMessage(@PathVariable Long id){
         try {
-            messageRepository.deleteById(id);
+            helloWorldService.deleteMessageById(id);
         } catch (Exception e){
             return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
         }
