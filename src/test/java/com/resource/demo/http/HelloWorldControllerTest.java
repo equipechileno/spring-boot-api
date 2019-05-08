@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class HelloWorldControllerTest {
 
     private HelloRequest helloRequest;
-    HelloResponse helloResponse;
+    private HelloResponse helloResponse;
     private ArrayList<HelloResponse> helloResponses;
 
     @MockBean
